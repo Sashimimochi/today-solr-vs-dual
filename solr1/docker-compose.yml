@@ -1,0 +1,45 @@
+version: "3"
+
+x-solr-service: &solr-service
+  image: solr:9.1.1
+  depends_on:
+    - zookeeper1
+  volumes:
+    - "./solr/solr.in.sh:/etc/default/solr.in.sh"
+    - "./solr/conf/basic_conf:/opt/solr/server/solr/configsets/basic/conf"
+    - "./solr/conf/mini_conf:/opt/solr/server/solr/configsets/mini/conf"
+    - "./solr/logs:/var/solr/logs"
+
+x-zookeeper-service: &zookeeper-service
+  image: zookeeper:3.7
+  container_name: zookeeper1
+  environment:
+    ZOO_MY_ID: 1
+    ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181
+    ZOO_4LW_COMMANDS_WHITELIST: mntr,conf,ruok
+
+x-app-service: &app-service
+  build: ./python/
+  container_name: app1
+  volumes:
+    - ./python:/workspace/app
+    - ./python/logs:/var/log/app
+  working_dir: /workspace/app
+  command: "streamlit run app.py --logger.level=info 2> streamlit_logs.log"
+  links:
+    - solr_node1
+    - zookeeper1
+  ports:
+    - 8501:8501
+
+services:
+  solr_node1:
+    <<: *solr-service
+    container_name: solr_node1
+    ports:
+      - "8983:8983"
+      - "9854:9854"
+  zookeeper1:
+    <<: *zookeeper-service
+  app3:
+    <<: *app-service

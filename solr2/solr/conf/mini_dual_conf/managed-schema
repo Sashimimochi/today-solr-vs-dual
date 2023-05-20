@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="example" version="1.6">
+    <field name="_version_" type="plong" indexed="false" stored="false"/>
+    <field name="_root_" type="int" indexed="true" stored="false" docValues="false"/>
+
+    <uniqueKey>id</uniqueKey>
+
+    <field name="id" type="int" indexed="true" stored="true" required="true"/>
+    <field name="category" type="int" indexed="true" stored="true"/>
+    <field name="title" type="string" indexed="true" stored="true" docValues="true"/>
+    <field name="vector1" type="knn_vector" indexed="true" stored="true"/>
+    <field name="vector2" type="knn_vector" indexed="true" stored="true"/>
+    <field name="text" type="text_ja" indexed="true" stored="true"/>
+
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" />
+    <fieldType name="knn_vector" class="solr.DenseVectorField" vectorDimension="4" similarityFunction="cosine"/>
+    <fieldType name="text_ja" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <!-- 形態素解析 -->
+            <tokenizer class="solr.JapaneseTokenizerFactory" mode="search"/>
+            <!-- 全角と半角の文字を正規化 -->
+            <filter class="solr.CJKWidthFilterFactory"/>
+            <!-- カタカナ長音の正規化 -->
+            <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4"/>
+            <!-- 大文字を全て小文字に変換 -->
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+</schema>

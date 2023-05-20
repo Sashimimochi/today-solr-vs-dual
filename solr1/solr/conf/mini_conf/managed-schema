@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="example" version="1.6">
+    <field name="_version_" type="plong" indexed="false" stored="false" />
+    <field name="_root_" type="int" indexed="true" stored="false" docValues="false" />
+
+    <uniqueKey>id</uniqueKey>
+
+    <field name="id" type="int" indexed="true" stored="true" required="true" />
+    <field name="title" type="string" indexed="true" stored="true" docValues="true"/>
+    <field name="vector" type="knn_vector" indexed="true" stored="true" />
+
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" />
+    <fieldType name="plong" class="solr.LongPointField" docValues="true" />
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" />
+    <fieldType name="knn_vector" class="solr.DenseVectorField" vectorDimension="4" similarityFunction="cosine" />
+</schema>
