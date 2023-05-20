@@ -1,8 +1,17 @@
 #!/bin/bash
 
-#set -eu
+set -eu
+
+create_log_dir() {
+  LOG_DIR=./solr/logs/
+  if [ ! -d $LOG_DIR ]; then
+    mkdir -p $LOG_DIR
+    sudo chmod 777 $LOG_DIR
+  fi
+}
 
 launch() {
+    create_log_dir
     docker-compose up -d
     while [ `curl -LI http://localhost:8984/solr -o /dev/null -w '%{http_code}\n' -s` -ne 200 ]; do
         sleep 30 # wait launch services
